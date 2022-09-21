@@ -54,12 +54,60 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
   background-size: cover;
   background-position: center center;
   height: 200px;
+  &:first-child {
+    transform-origin: center left;
+  }
+  &:last-child {
+    transform-origin: center right;
+  }
+`;
+
+const Info = styled(motion.div)`
+  padding: 10px;
+  background-color: ${(props) => props.theme.black.lighter};
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  color: white;
+  h4 {
+    test-align: center;
+    font-size: 18px;
+  }
 `;
 
 const rowVars = {
   hidden: { x: window.outerWidth + 5 },
   visible: { x: 0 },
   exit: { x: -window.outerWidth - 5 },
+};
+
+const boxVars = {
+  normal: {
+    scale: 1,
+  },
+  hover: {
+    zIndex: 99,
+    scale: 1.3,
+    y: -50,
+    transition: {
+      delay: 0.3,
+      type: "tween",
+    },
+  },
+};
+
+const infoVars = {
+  // normal: {
+  //   opacity: 0,
+  // },
+  hover: {
+    opacity: 1,
+    transition: {
+      delay: 0.3,
+      type: "tween",
+    },
+  },
 };
 
 const offset = 6;
@@ -110,9 +158,15 @@ function Home() {
                   .map((p, i) => (
                     <Box
                       key={i}
+                      variants={boxVars}
+                      initial="normal"
+                      whileHover="hover"
+                      transition={{ type: "tween" }}
                       bgPhoto={makeImagePath(p.backdrop_path || "", "w500")}
                     >
-                      {p.title}
+                      <Info variants={infoVars}>
+                        <h4>{p.title}</h4>
+                      </Info>
                     </Box>
                   ))}
               </Row>
