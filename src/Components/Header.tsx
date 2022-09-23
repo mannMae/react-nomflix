@@ -1,7 +1,8 @@
-import { Link, useRouteMatch } from "react-router-dom";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import { motion, useAnimation, useScroll } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 const Nav = styled(motion.nav)`
   display: flex;
@@ -50,7 +51,7 @@ const Item = styled.li`
   }
 `;
 
-const Search = styled.span`
+const Search = styled.form`
   color: white;
   display: flex;
   align-items: center;
@@ -111,6 +112,10 @@ const navVars = {
   },
 };
 
+interface IForm {
+  keyword: string;
+}
+
 function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const homeMatch = useRouteMatch("/");
@@ -139,6 +144,11 @@ function Header() {
       }
     });
   }, [scrollY]);
+  const history = useHistory();
+  const { register, handleSubmit } = useForm<IForm>();
+  const onValid = (data: IForm) => {
+    history.push(`/search?keyword=${data.keyword}`);
+  };
   return (
     <Nav variants={navVars} animate={navAnimation} initial={"top"}>
       <Col>
@@ -167,7 +177,7 @@ function Header() {
         </Items>
       </Col>
       <Col>
-        <Search>
+        <Search onSubmit={handleSubmit(onValid)}>
           <motion.svg
             animate={{ x: searchOpen ? -180 : -30 }}
             fill="currentColor"
@@ -186,6 +196,7 @@ function Header() {
             ></motion.path>
           </motion.svg>
           <Input
+            {...register("keyword", { required: true, minLength: 2 })}
             placeholder="검색어를 입력해주세요"
             variants={inputVars}
             initial="initial"
